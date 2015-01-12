@@ -36,6 +36,25 @@
      div#board table td img {
        display: block;
      }
+     #control-panel {
+       position: absolute;
+       top: 40px;
+     }
+     #custom-size {
+       display: table;
+       position: relative;
+       left: 25px;
+     }
+     #custom-size div {
+       display: table-row;
+     }
+     #custom-size p {
+       display: table-cell;
+     }
+     #custom-size input {
+       display: table-cell;
+       width: 25px;
+     }
     </style>
   </head>
   <body>
@@ -71,6 +90,17 @@
         </tr>
       </table>
       -->
+    </div>
+    <div id="control-panel">
+      <input type="radio" name="level" value="beginner" checked>Beginner<br>
+      <input type="radio" name="level" value="intermediate">Intermediate<br>
+      <input type="radio" name="level" value="expert">Expert<br>
+      <input type="radio" name="level" value="custom">Custom
+      <div id="custom-size">
+        <div><p>Rows:</p> <input type="text" name="num-rows" value="8"></div>
+        <div><p>Column:</p> <input type="text" name="num-cols" value="8"></div>
+        <div><p>Mines:</p> <input type="text" name="num-mines" value="10"></div>
+      </div>
     </div>
     <hr>
     <div id="disclaimer">

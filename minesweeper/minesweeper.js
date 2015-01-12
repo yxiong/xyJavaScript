@@ -36,11 +36,11 @@ var model = {
                      [9, 2],
                      [2, 9]],
     */
-    init: function() {
-        this.numRows = 8;
-        this.numCols = 8;
+    init: function(numRows, numCols, numMines) {
+        this.numRows = numRows;
+        this.numCols = numCols;
+        this.numMines = numMines;
         this.numCells = this.numRows * this.numCols;
-        this.numMines = 10;
         this.numExposed = 0;
         this.numMarked = 0;
         this.generateRandomIsMine();
@@ -120,7 +120,7 @@ var model = {
                     }
                 }
             }
-            if (this.numExposed+this.numMines === this.numRows*this.numCols) {
+            if (this.numExposed+this.numMines === this.numCells) {
                 controller.win();
             }
         }
@@ -182,37 +182,86 @@ var model = {
 };
 
 var view = {
+    firstTimeInit: true,
     mouseLeftButtonDown: false,
     init: function() {
         // Render 'board' html.
-        var img = "<img width=\"16\" height=\"16\" src=\"imgs/cell/intact.png\"></img>";
-        var boardHtml = "<table>";
+        var img = $("<img/>", {
+            width: "16",
+            height: "16",
+            src: "imgs/cell/intact.png"
+        })[0].outerHTML;
+        var tableRows = [];
         for (var i = 0; i < model.numRows; i++) {
-            boardHtml += "<tr>";
+            var cells = [];
             for (var j = 0; j < model.numCols; j++) {
                 var id = "r" + i + "c" + j;
-                boardHtml += "<td id=\"" + id + "\">" + img + "</td>";
+                cells.push("<td id=\"" + id + "\">" + img + "</td>");
             }
-            boardHtml += "</tr>";
+            tableRows.push("<tr>" + cells.join("") + "</tr>");
         }
-        boardHtml += "</table>";
-        $("#board").html(boardHtml);
-        // Set mouse event handlers.
-        $(document).mousedown(function(event) {
+        $("#board").html("<table>" + tableRows.join("") + "</table>");
+        // Element locations, counter, timer, face and control pannel.
+        var boardWidth = 16*model.numCols;
+        $("#board").css("width", boardWidth + "px");
+        $("#upper").css("width", boardWidth + "px");
+        $("#control-panel").css("left", (boardWidth + 30) + "px");
+        this.updateDigits("counter", model.numMines);
+        this.updateDigits("timer", 0);
+        this.updateFace("smile");
+        $("#custom-size input[name='num-rows']").val(model.numRows);
+        $("#custom-size input[name='num-cols']").val(model.numCols);
+        $("#custom-size input[name='num-mines']").val(model.numMines);
+        // Set event handlers.
+        if (this.firstTimeInit) {
+            $(document).mousedown(function(event) {
+                if (event.which === 1) {
+                    view.mouseLeftButtonDown = true;
+                }
+            });
+            $(document).mouseup(function(event) {
+                if (event.which === 1) {
+                    view.mouseLeftButtonDown = false;
+                }
+            });
+            this.setBoardMouseEventHandlers();
+            this.setFaceMouseEventHandlers();
+            this.setControlPanelEventHandlers();
+            this.firstTimeInit = false;
+        }
+    },
+    setBoardMouseEventHandlers: function() {
+        $("#board").on("mousedown", "td", function(event) {
             if (event.which === 1) {
-                view.mouseLeftButtonDown = true;
+                view.setCellImagePressed(this.id, true);
             }
         });
-        $(document).mouseup(function(event) {
-            if (event.which === 1) {
-                view.mouseLeftButtonDown = false;
+        $("#board").on("mouseenter", "td", function(event) {
+            if (view.mouseLeftButtonDown) {
+                view.setCellImagePressed(this.id, true);
             }
         });
-        for (var i = 0; i < model.numRows; i++) {
-            for (var j = 0; j < model.numCols; j++) {
-                this.setCellMouseEventHandlers($("#r"+i+"c"+j));
+        $("#board").on("mouseleave", "td", function(event) {
+            if (view.mouseLeftButtonDown) {
+                view.setCellImagePressed(this.id, false);
             }
-        }
+        });
+        $("#board").on("mouseup", "td", function(event) {
+            var rowCol = view.rowColFromStr(this.id);
+            switch (event.which) {
+            case 1:
+                view.setCellImagePressed(this.id, false);
+                controller.hit(rowCol[0], rowCol[1]);
+                break;
+            case 3:
+                controller.mark(rowCol[0], rowCol[1]);
+                break;
+            default:
+                // Do nothing.
+            }
+        });
+    },
+    setFaceMouseEventHandlers: function() {
         $("#face").mousedown(function(event) {
             view.updateFace("pressed");
         });
@@ -240,43 +289,45 @@ var view = {
         });
         $("#face").mouseup(function(event) {
             view.updateFace("smile");
-            model.init();
-            view.init();
-            controller.init();
+            controller.startGame();
         });
-        // Others.
-        $("#upper").css("width", 16*model.numCols + "px");
-        this.updateDigits("counter", model.numMines);
-        this.updateDigits("timer", 0);
     },
-    setCellMouseEventHandlers: function(cell) {
-        cell.mousedown(function(event) {
-            if (event.which === 1) {
-                view.setCellImagePressed(this.id, true);
+    setControlPanelEventHandlers: function() {
+        // Set event handler for control panel.
+        $("#control-panel input[name='level']:radio").change(function(event) {
+            controller.startGame();
+        });
+        $("#custom-size :text").focus(function(event) {
+            $("#control-panel input[value='custom']:radio").prop(
+                "checked", true);
+        });
+        $("#custom-size input[name='num-rows']:text").change(function(event) {
+            var numRows = parseInt(event.target.value);
+            if (isNaN(numRows) || numRows < 8 || numRows > 24) {
+                alert("Number of rows has to be an integer between 8 and 24.");
+                $("#custom-size input[name='num-rows']:text").val(model.numRows);
+            } else {
+                controller.startGame();
             }
         });
-        cell.mouseenter(function(event) {
-            if (view.mouseLeftButtonDown) {
-                view.setCellImagePressed(this.id, true);
+        $("#custom-size input[name='num-cols']:text").change(function(event) {
+            var numCols = parseInt(event.target.value);
+            if (isNaN(numCols) || numCols < 8 || numCols > 30) {
+                alert("Number of columns has to be an integer between 8 and 30.");
+                $("#custom-size input[name='num-cols']:text").val(model.numCols);
+            } else {
+                controller.startGame();
             }
         });
-        cell.mouseleave(function(event) {
-            if (view.mouseLeftButtonDown) {
-                view.setCellImagePressed(this.id, false);
-            }
-        });
-        cell.mouseup(function(event) {
-            var rowCol = view.rowColFromStr(this.id);
-            switch (event.which) {
-            case 1:
-                view.setCellImagePressed(this.id, false);
-                controller.hit(rowCol[0], rowCol[1]);
-                break;
-            case 3:
-                controller.mark(rowCol[0], rowCol[1]);
-                break;
-            default:
-                // Do nothing.
+        $("#custom-size input[name='num-mines']:text").change(function(event) {
+            var numMines = parseInt(event.target.value);
+            if (isNaN(numMines) || numMines < 10 || numMines > 668 ||
+                numMines >= model.numCells) {
+                alert("Number of mines has to be an integer between 10 and 668, and smaller than number of cells.");
+                $("#custom-size input[name='num-mines']:text").val(
+                    model.numMines);
+            } else {
+                controller.startGame();
             }
         });
     },
@@ -387,7 +438,7 @@ var controller = {
         WIN:         2,
         LOSE:        3
     },
-    timerSet: false,
+    firstTimeInit: true,
     timerValue: 0,
     /* The following field will be created in `init()` function.
     gameState: controller.GameStateEnum.INIT,
@@ -395,15 +446,46 @@ var controller = {
     init: function() {
         this.gameState = this.GameStateEnum.INIT;
         this.timerValue = 0;
-        if (!this.timerSet) {   // Make sure the timer is only set once.
+        if (this.firstTimeInit) {
             window.setInterval(function (){
                 if (controller.gameState === controller.GameStateEnum.PLAYING) {
                     controller.timerValue++;
                     view.updateDigits("timer", controller.timerValue);
                 }
             }, 1000);
-            this.timerSet = true;
+            this.firstTimeInit = false;
         }
+    },
+    startGame: function() {
+        var level = $("#control-panel input[name='level']:checked").val();
+        var numRows, numCols, numMines;
+        switch (level) {
+        case "beginner":
+            numRows = 8;
+            numCols = 8;
+            numMines = 10;
+            break;
+        case "intermediate":
+            numRows = 16;
+            numCols = 16;
+            numMines = 40;
+            break;
+        case "expert":
+            numRows = 16;
+            numCols = 30;
+            numMines = 99;
+            break;
+        case "custom":
+            numRows = parseInt($("#custom-size input[name='num-rows']").val());
+            numCols = parseInt($("#custom-size input[name='num-cols']").val());
+            numMines = parseInt($("#custom-size input[name='num-mines']").val());
+            break;
+        default:
+            throw new Error("Unknown level '" + level + "'.");
+        }
+        model.init(numRows, numCols, numMines);
+        view.init();
+        controller.init();
     },
     hit: function(row, col) {
         if (this.gameState === this.GameStateEnum.INIT) {
@@ -468,7 +550,10 @@ var controller = {
 $(document).ready(function() {
     document.oncontextmenu = function() { return false; }
     document.ondragstart = function() { return false; }
-    model.init();
-    view.init();
-    controller.init();
+    controller.startGame();
 });
+
+// Local Variables:
+// js-indent-level: 4
+// indent-tabs-mode: nil
+// End:
