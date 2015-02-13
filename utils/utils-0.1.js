@@ -11,6 +11,12 @@ function assert(condition, message) {
     }
 }
 
+// Generate a random integer in the range [`low`, `high`).
+function randomInteger(low, high) {
+  return Math.floor(Math.random() * (high-low)) + low;
+}
+
+// Generate `size` different random integers in the range [`low`, `high`).
 function randomIntegers(low, high, size) {
     var choices = new Array(high-low);
     for (var i = low; i < high; i++) {

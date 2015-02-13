@@ -1,0 +1,12 @@
+{
+  "name": "xyJavaScript",
+  "title": "xyJavaScript",
+  "description": "Some JavaScript examples implemented by Ying Xiong.",
+  "version": "0.1.0",
+  "devDependencies": {
+    "autoprefixer-core": "5.1.5",
+    "grunt": "0.4.5",
+    "grunt-contrib-jshint": "0.11.0",
+    "grunt-postcss": "0.3.0"
+  }
+}
