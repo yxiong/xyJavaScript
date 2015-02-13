@@ -128,8 +128,9 @@ var model = {
     exposeNeighborsIfReady: function(row, col) {
         assert(controller.gameState === controller.GameStateEnum.PLAYING);
         var markCount = 0;
-        for (var i = row-1; i <= row+1; i++) {
-            for (var j = col-1; j <= col+1; j++) {
+        var i,j;
+        for (i = row-1; i <= row+1; i++) {
+            for (j = col-1; j <= col+1; j++) {
                 if (this.isValidRowCol(i,j) &&
                     this.cellStates[i][j] === this.CellStateEnum.MARKED) {
                     markCount++;
@@ -137,8 +138,8 @@ var model = {
             }
         }
         if (markCount === this.neighborCounts[row][col]) {
-            for (var i = row-1; i <= row+1; i++) {
-                for (var j = col-1; j <= col+1; j++) {
+            for (i = row-1; i <= row+1; i++) {
+                for (j = col-1; j <= col+1; j++) {
                     if (i < 0 || i >= this.numRows ||
                         j < 0 || j >= this.numCols ||
                         (i === row && j === col)) {
@@ -367,7 +368,7 @@ var view = {
                         j < 0 || j >= model.numCols ||
                         (i === row && j === col) ||
                         model.cellStates[i][j] === model.CellStateEnum.EXPOSED) {
-                        continue
+                        continue;
                     }
                     this.setCellImagePressed("r"+i+"c"+j, down);
                 }
@@ -548,8 +549,8 @@ var controller = {
 };
 
 $(document).ready(function() {
-    document.oncontextmenu = function() { return false; }
-    document.ondragstart = function() { return false; }
+    document.oncontextmenu = function() { return false; };
+    document.ondragstart = function() { return false; };
     controller.startGame();
 });
 

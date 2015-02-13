@@ -72,23 +72,24 @@ var model = {
     generateShip: function() {
         var direction = Math.floor(Math.random() * 2);
         var locations = [];
+        var r,c,i;
         if (direction === 0) {   // Horizontal.
-            var r = Math.floor(Math.random() * this.boardSize);
-            var c = Math.floor(Math.random() *
+            r = Math.floor(Math.random() * this.boardSize);
+            c = Math.floor(Math.random() *
                                (this.boardSize - this.shipLength + 1));
-            for (var i = 0; i < this.shipLength; i++) {
+            for (i = 0; i < this.shipLength; i++) {
                 locations.push(this.rows[r] + this.cols[c+i]);
             }
         } else {   // Vertical.
-            var r = Math.floor(Math.random() *
+            r = Math.floor(Math.random() *
                                (this.boardSize - this.shipLength + 1));
-            var c = Math.floor(Math.random() * this.boardSize);
-            for (var i = 0; i < this.shipLength; i++) {
+            c = Math.floor(Math.random() * this.boardSize);
+            for (i = 0; i < this.shipLength; i++) {
                 locations.push(this.rows[r+i] + this.cols[c]);
             }
         }
         var hits = [];
-        for (var i = 0; i < this.shipLength; i++) {
+        for (i = 0; i < this.shipLength; i++) {
             hits.push(false);
         }
         return { locations: locations, hits: hits };
@@ -122,7 +123,7 @@ var view = {
             tableHtml += "<tr>";
             for (var j = 0; j < model.cols.length; j++) {
                 tableHtml += "<td id=\"" + model.rows[i] + model.cols[j] +
-                    "\"></td>"
+                    "\"></td>";
             }
             tableHtml += "</tr>";
         }
@@ -137,14 +138,15 @@ var view = {
     displayMiss: function(location) {
         $("#"+location).attr("class", "miss");
     },
+    onclickHandler: function(event) {
+        controller.processGuess(event.data.guess);
+    },
     setOnclickHandlers: function() {
         for (var i = 0; i < model.rows.length; i++) {
             for (var j = 0; j < model.cols.length; j++) {
                 var r = model.rows[i];
                 var c = model.cols[j];
-                $("#"+r+c).click(function() {
-                    controller.processGuess(this.id);
-                });
+                $("#"+r+c).click({guess: r+c}, this.onclickHandler);
             }
         }
     }
@@ -193,3 +195,9 @@ $(document).ready(function() {
     view.init();
     controller.init();
 });
+
+
+// Local Variables:
+// js-indent-level: 4
+// indent-tabs-mode: nil
+// End:
