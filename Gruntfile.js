@@ -17,7 +17,9 @@ module.exports = function(grunt) {
       },
       dist: {
         files: {
-          '2048/css/tile.css': '2048/css/tile-no-prefixes.css'
+          '2048/css/main.css': '2048/css-dev/main.css',
+          '2048/css/tile.css': '2048/css-dev/tile.css',
+          '2048/css/mobile.css': '2048/css-dev/mobile.css'
         }
       }
     }

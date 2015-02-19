@@ -114,3 +114,40 @@ Grid.prototype.mergeTiles = function(src, dst) {
   this.tiles[dst.i][dst.j].previousPositions.push(src);
   this.tiles[src.i][src.j] = new Tile(0, []);
 };
+
+// Return the maximum tile values in the grid.
+Grid.prototype.maxTileValue = function() {
+  var value = 0;
+  for (var i = 0; i < this.size; i++) {
+    for (var j = 0; j < this.size; j++) {
+      value = Math.max(this.tiles[i][j].value);
+    }
+  }
+  return value;
+};
+
+// Check whether one can still move the grid.
+Grid.prototype.canMove = function() {
+  if (this.numEmptyTiles() > 0) {
+    return true;
+  }
+  // If the grid is full, check whether there are adjacent cells that can be
+  // mreged.
+  var i,j;
+  for (i = 0; i < this.size; i++) {
+    for (j = 0; j < this.size-1; j++) {
+      if (this.tiles[i][j].value === this.tiles[i][j+1].value) {
+        return true;
+      }
+    }
+  }
+  for (j = 0; j < this.size; j++) {
+    for (i = 0; i < this.size-1; i++) {
+      if (this.tiles[i][j].value === this.tiles[i+1][j].value) {
+        return true;
+      }
+    }
+  }
+  // Now we know we cannot move anymore.
+  return false;
+};

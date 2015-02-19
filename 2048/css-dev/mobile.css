@@ -1,0 +1,118 @@
+@media screen and (max-width: 520px) {
+
+/* ================ General. ================ */
+
+html, body { font-size: 15px; }
+
+body {
+    margin-top: 0;
+    padding: 20px;
+}
+
+#all-contents {
+    width: 280px;
+    margin: 0 auto;
+}
+
+/* ================ Header. ================ */
+
+header { margin-bottom: 10px; }
+
+header > h1 {
+    font-size: 27px;
+    margin-top: 15px;
+}
+
+#current-score, #best-score {
+    margin-top: 0;
+    padding: 15px 10px;
+    min-width: 40px;
+}
+
+/* ================ Above game. ================ */
+
+#game-intro {
+    width: 55%;
+    display: block;
+    box-sizing: border-box;
+    line-height: 1.65;
+}
+
+#restart-button {
+    width: 42%;
+    padding: 0;
+    display: block;
+    box-sizing: border-box;
+    margin-top: 2px;
+}
+
+/* ================ Game. ================ */
+
+#game {
+    margin-top: 17px;
+    padding: 10px;
+    width: 280px;
+    height: 280px;
+}
+
+#game-grid .row { margin-bottom: 10px; }
+#game-grid .cell {
+    width: 57.5px;
+    height: 57.5px;
+    margin-right: 10px;
+}
+
+/* ================ Game messages. ================ */
+
+#game-message .lower {
+    display: block;
+    margin-top: 19px;
+}
+
+#game-message p {
+    font-size: 30px;
+    height: 30px;
+    line-height: 30px;
+    margin-top: 18%;
+    margin-bottom: 0;
+}
+
+#game-message .lower {
+    margin-top: 35px;
+}
+
+/* ================ Tile. ================ */
+
+.tile, .tile .tile-inner {
+    width: 58px;
+    height: 58px;
+    line-height: 58px;
+}
+
+/* Place the according to its position attribute. */
+.tile.position-0-0 { transform: translate(0px, 0px); }
+.tile.position-1-0 { transform: translate(0px, 67px); }
+.tile.position-2-0 { transform: translate(0px, 135px); }
+.tile.position-3-0 { transform: translate(0px, 202px); }
+.tile.position-0-1 { transform: translate(67px, 0px); }
+.tile.position-1-1 { transform: translate(67px, 67px); }
+.tile.position-2-1 { transform: translate(67px, 135px); }
+.tile.position-3-1 { transform: translate(67px, 202px); }
+.tile.position-0-2 { transform: translate(135px, 0px); }
+.tile.position-1-2 { transform: translate(135px, 67px); }
+.tile.position-2-2 { transform: translate(135px, 135px); }
+.tile.position-3-2 { transform: translate(135px, 202px); }
+.tile.position-0-3 { transform: translate(202px, 0px); }
+.tile.position-1-3 { transform: translate(202px, 67px); }
+.tile.position-2-3 { transform: translate(202px, 135px); }
+.tile.position-3-3 { transform: translate(202px, 202px); }
+
+/* The appearance of the inner tiles. */
+.tile .tile-inner { font-size: 35px; }
+.tile.value-128 .tile-inner { font-size: 25px; }
+.tile.value-256 .tile-inner { font-size: 25px; }
+.tile.value-512 .tile-inner { font-size: 25px; }
+.tile.value-1024 .tile-inner { font-size: 15px; }
+.tile.value-2048 .tile-inner { font-size: 15px; }
+.tile.value-super .tile-inner { font-size: 10px; }
+}
